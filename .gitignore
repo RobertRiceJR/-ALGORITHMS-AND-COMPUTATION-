@@ -1,1 +1,20 @@
 node_modules
+# Ignore LaTeX intermediate files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.bcf
+*.run.xml
+
+# Ignore generated PDFs if you don’t want them in git
+*.pdf
+# Ignore OS-specific files
+.DS_Store   

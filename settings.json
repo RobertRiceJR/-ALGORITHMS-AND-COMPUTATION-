@@ -1,0 +1,34 @@
+{
+  // Use pdflatex as the compiler (you can switch to xelatex or lualatex if needed)
+  "latex-workshop.latex.tools": [
+    {
+      "name": "pdflatex",
+      "command": "pdflatex",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "%DOC%"
+      ]
+    }
+  ],
+
+  // Recipe: run pdflatex once
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "pdflatex",
+      "tools": ["pdflatex"]
+    }
+  ],
+
+  // Automatically compile on save
+  "latex-workshop.latex.autoBuild.run": "onSave",
+
+  // Show PDF viewer inside VS Code
+  "latex-workshop.view.pdf.viewer": "tab",
+
+  // Sync between PDF and source
+  "latex-workshop.synctex.afterBuild.enabled": true,
+
+  // Optional: auto-clean auxiliary files after build
+  "latex-workshop.latex.autoClean.run": "onBuilt"
+}

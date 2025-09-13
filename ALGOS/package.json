@@ -4,7 +4,9 @@
   "description": "",
   "main": "lab1.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "latex:build": "pdflatex -interaction=nonstopmode -synctex=1 main.tex",
+    "latex:watch": "chokidar '**/*.tex' -c 'npm run latex:build'"
   },
   "keywords": [],
   "author": "",
