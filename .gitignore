@@ -14,7 +14,5 @@ node_modules
 *.bcf
 *.run.xml
 
-# Ignore generated PDFs if you don’t want them in git
-*.pdf
 # Ignore OS-specific files
 .DS_Store   
