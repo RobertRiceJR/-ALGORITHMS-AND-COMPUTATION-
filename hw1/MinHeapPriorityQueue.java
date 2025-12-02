@@ -3,25 +3,38 @@ import java.util.Map;
 
 public class MinHeapPriorityQueue {
 
-    private HeapNode[] heap;           // 1-based heap array; heap[0] unused
-    private int size;                  // current number of elements
-    private Map<Integer, Integer> position;  // item -> index in heap array
+    private static class HeapNode {
+        int item; 
+        int priority; 
 
-    // This plays the role of StartHeap(N)
+        HeapNode(int item, int priority) {
+            this.item = item;
+            this.priority = priority;
+        }
+        @Override
+        public String toString() {
+            return "(" + item + ", " + priority + ")";
+        }
+    }
+
+    private HeapNode[] heap;
+    private int size;
+
+    // item -> current index in the heap array (for O(1) lookup)
+    private Map<Integer, Integer> position;
+
     public MinHeapPriorityQueue(int capacity) {
-        heap = new HeapNode[capacity + 1]; // 1..capacity
+        StartHeap(capacity);
+    }
+
+     // 3. StartHeap(N) – initialize / reset the heap to be empty with capacity N.
+    public void StartHeap(int capacity) {
+        heap = new HeapNode[capacity + 1];
         size = 0;
         position = new HashMap<>();
     }
 
-    // Optional reset method if you really want a StartHeap() method as in the spec
-    public void startHeap(int capacity) {
-        heap = new HeapNode[capacity + 1];
-        size = 0;
-        position.clear();
-    }
-
-    // Utility index helpers
+    // utils
     private int parent(int i) { return i / 2; }
     private int left(int i)   { return 2 * i; }
     private int right(int i)  { return 2 * i + 1; }
@@ -39,14 +52,13 @@ public class MinHeapPriorityQueue {
         heap[i] = heap[j];
         heap[j] = temp;
 
-        // **** VERY IMPORTANT ****
-        // Keep the position map in sync
         position.put(heap[i].item, i);
         position.put(heap[j].item, j);
     }
 
-    // 1. Heapify_Up(index)
-    private void heapifyUp(int index) {
+
+     // 1. Heapify_Up(index) - move node at index up until heap property holds.
+    private void Heapify_Up(int index) {
         while (index > 1) {
             int p = parent(index);
             if (heap[index].priority < heap[p].priority) {
@@ -58,18 +70,18 @@ public class MinHeapPriorityQueue {
         }
     }
 
-    // 2. Heapify_Down(index)
-    private void heapifyDown(int index) {
+     // 2. Heapify_Down(index) – move node at index down until heap property holds.
+    private void Heapify_Down(int index) {
         while (true) {
-            int left = left(index);
-            int right = right(index);
+            int leftChild = left(index);
+            int rightChild = right(index);
             int smallest = index;
 
-            if (left <= size && heap[left].priority < heap[smallest].priority) {
-                smallest = left;
+            if (leftChild <= size && heap[leftChild].priority < heap[smallest].priority) {
+                smallest = leftChild;
             }
-            if (right <= size && heap[right].priority < heap[smallest].priority) {
-                smallest = right;
+            if (rightChild <= size && heap[rightChild].priority < heap[smallest].priority) {
+                smallest = rightChild;
             }
             if (smallest != index) {
                 swap(index, smallest);
@@ -80,10 +92,9 @@ public class MinHeapPriorityQueue {
         }
     }
 
-    // 3. StartHeap(N) covered by constructor / startHeap()
+     // 4. Insert(item, value) – insert a new (item, priority) into the heap.
 
-    // 4. Insert(item, value)  -- O(log n)
-    public void insert(int item, int priority) {
+    public void Insert(int item, int priority) {
         if (size >= heap.length - 1) {
             throw new IllegalStateException("Heap is full");
         }
@@ -94,25 +105,27 @@ public class MinHeapPriorityQueue {
         size++;
         heap[size] = new HeapNode(item, priority);
         position.put(item, size);
-        heapifyUp(size);
+        Heapify_Up(size);
     }
 
-    // 5. FindMin() -- O(1)
-    public HeapNode findMin() {
+
+     // 5. FindMin() – return the minimum element without removing it.
+
+    public HeapNode FindMin() {
         if (size == 0) {
             return null;
         }
         return heap[1];
     }
 
-    // 6. Delete(index) -- O(log n)
-    private void deleteByIndex(int index) {
+     // 6. Delete(index) – remove the node at position index in O(log n).
+
+    private void DeleteIndex(int index) {
         if (index < 1 || index > size) {
-            return; // or throw IllegalArgumentException
+            return;
         }
 
         if (index == size) {
-            // deleting the last element: easy
             int item = heap[index].item;
             position.remove(item);
             heap[index] = null;
@@ -123,83 +136,83 @@ public class MinHeapPriorityQueue {
         HeapNode nodeToDelete = heap[index];
         HeapNode lastNode = heap[size];
 
-        // Move last node into "hole"
+        // move last node to index
         heap[index] = lastNode;
         heap[size] = null;
         size--;
 
-        // Update position map
+        // update position map.
         position.remove(nodeToDelete.item);
         position.put(lastNode.item, index);
 
-        // Restore heap property (could go up or down)
+        // restore heap property
         int parentIndex = parent(index);
         if (index > 1 && heap[index].priority < heap[parentIndex].priority) {
-            heapifyUp(index);
+            Heapify_Up(index);
         } else {
-            heapifyDown(index);
+            Heapify_Down(index);
         }
     }
 
-    // 7. ExtractMin() -- O(log n)
-    public HeapNode extractMin() {
+     // 7. ExtractMin() – remove and return the minimum element.
+
+    public HeapNode ExtractMin() {
         if (size == 0) {
             return null;
         }
         HeapNode min = heap[1];
-        deleteByIndex(1);
+        DeleteIndex(1);
         return min;
     }
 
-    // 8. Delete(item) -- O(log n) via position map
-    public void delete(int item) {
+     // 8. Delete(item) – delete the node with the given item key.
+
+    public void Delete(int item) {
         Integer index = position.get(item);
         if (index == null) {
-            return; // or throw if you want
+            return; // or throw if you prefer
         }
-        deleteByIndex(index);
+        DeleteIndex(index);
     }
 
-    // 9. ChangePriority(item, newPriority) -- O(log n)
-    public void changePriority(int item, int newPriority) {
+     // 9. ChangePriority(item, newPriority) – change the priority of item
+
+    public void ChangePriority(int item, int newPriority) {
         Integer index = position.get(item);
         if (index == null) {
-            return; // or throw
+            return; // or throw if you prefer
         }
 
         int oldPriority = heap[index].priority;
         heap[index].priority = newPriority;
 
         if (newPriority < oldPriority) {
-            // became "better" => move up
-            heapifyUp(index);
+            Heapify_Up(index);
         } else if (newPriority > oldPriority) {
-            // became "worse" => move down
-            heapifyDown(index);
+            Heapify_Down(index);
         }
-        // if equal, no heapify needed
     }
 
-    // Simple sanity test
+
+     // test
     public static void main(String[] args) {
         MinHeapPriorityQueue pq = new MinHeapPriorityQueue(10);
 
-        pq.insert(1, 50);
-        pq.insert(2, 30);
-        pq.insert(3, 40);
-        pq.insert(4, 10);
-        pq.insert(5, 20);
+        pq.Insert(1, 50);
+        pq.Insert(2, 30);
+        pq.Insert(3, 40);
+        pq.Insert(4, 10);
+        pq.Insert(5, 20);
 
-        System.out.println("Min: " + pq.findMin()); // should be (4,10)
+        System.out.println("Min: " + pq.FindMin()); // should be (4,10)
 
-        pq.changePriority(1, 5); // item 1 becomes best
-        System.out.println("Min after changePriority(1,5): " + pq.findMin()); // (1,5)
+        pq.ChangePriority(1, 5); // item 1 becomes best
+        System.out.println("Min after ChangePriority(1,5): " + pq.FindMin()); // (1,5)
 
         while (!pq.isEmpty()) {
-            System.out.println("Extracted: " + pq.extractMin());
+            System.out.println("Extracted: " + pq.ExtractMin());
         }
+
+        // You can add your Delete(item) and "priority gets worse" tests here too.
     }
-    
 }
-
-
