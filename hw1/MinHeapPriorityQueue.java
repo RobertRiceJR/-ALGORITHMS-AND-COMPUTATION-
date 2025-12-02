@@ -187,24 +187,24 @@ public class MinHeapPriorityQueue {
         }
     }
 
-     // test
-    public static void main(String[] args) {
-        MinHeapPriorityQueue pq = new MinHeapPriorityQueue(10);
+    // // test
+    // public static void main(String[] args) {
+    //     MinHeapPriorityQueue pq = new MinHeapPriorityQueue(10);
 
-        pq.Insert(1, 50);
-        pq.Insert(2, 30);
-        pq.Insert(3, 40);
-        pq.Insert(4, 10);
-        pq.Insert(5, 20);
+    //     pq.Insert(1, 50);
+    //     pq.Insert(2, 30);
+    //     pq.Insert(3, 40);
+    //     pq.Insert(4, 10);
+    //     pq.Insert(5, 20);
 
-        System.out.println("Min: " + pq.FindMin()); 
+    //     System.out.println("Min: " + pq.FindMin()); 
 
-        pq.ChangePriority(1, 5); 
-        System.out.println("Min after ChangePriority(1,5): " + pq.FindMin()); 
+    //     pq.ChangePriority(1, 5); 
+    //     System.out.println("Min after ChangePriority(1,5): " + pq.FindMin()); 
 
-        while (!pq.isEmpty()) {
-            System.out.println("Extracted: " + pq.ExtractMin());
-        }
+    //     while (!pq.isEmpty()) {
+    //         System.out.println("Extracted: " + pq.ExtractMin());
+    //     }
 
-    }
+    // }
 }
