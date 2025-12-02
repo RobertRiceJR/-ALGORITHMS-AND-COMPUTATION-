@@ -213,6 +213,5 @@ public class MinHeapPriorityQueue {
             System.out.println("Extracted: " + pq.ExtractMin());
         }
 
-        // You can add your Delete(item) and "priority gets worse" tests here too.
     }
 }
