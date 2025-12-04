@@ -1,13 +1,8 @@
 import java.io.*;
 import java.util.*;
 
-/**
- * SAMER08A - Almost Shortest Path
- * Uses custom MinHeapPriorityQueue from Part I.
- */
 public class Main {
 
-    // Edge structure for adjacency list
     static class Edge {
         int to;
         int weight;
@@ -21,9 +16,9 @@ public class Main {
 
     /**
      * Dijkstra's algorithm using MinHeapPriorityQueue.
-     * If buildPrev == true, it also fills prev[] with all predecessors that lie
+     * if buildPrev == true, it also fills prev[] with all predecessors that lie
      * on some shortest path.
-     * If buildPrev == false, prev[] is ignored.
+     * if buildPrev == false, prev[] is ignored.
      *
      * removed[u][v] == true means the edge u -> v should be ignored.
      */
@@ -36,7 +31,6 @@ public class Main {
             boolean[][] removed,
             boolean buildPrev) {
 
-        // Initialize distances
         Arrays.fill(dist, INF);
         if (buildPrev) {
             for (int i = 0; i < N; i++) {
@@ -45,26 +39,24 @@ public class Main {
         }
 
         MinHeapPriorityQueue pq = new MinHeapPriorityQueue(N);
-        // Insert all vertices with initial priority INF
         for (int v = 0; v < N; v++) {
             pq.Insert(v, INF);
         }
-        // Set source distance to 0
         dist[S] = 0;
         pq.ChangePriority(S, 0);
 
         boolean[] visited = new boolean[N];
 
         while (!pq.isEmpty()) {
-            int u = pq.ExtractMinItem(); // get vertex with smallest dist
+            int u = pq.ExtractMinItem();
             if (u == -1) break;
-            if (dist[u] == INF) break;   // remaining vertices are unreachable
+            if (dist[u] == INF) break;
             if (visited[u]) continue;
             visited[u] = true;
 
             for (Edge e : adj[u]) {
                 int v = e.to;
-                if (removed != null && removed[u][v]) continue; // skip removed edges
+                if (removed != null && removed[u][v]) continue; 
                 if (visited[v]) continue;
 
                 int alt = dist[u] + e.weight;
@@ -76,7 +68,6 @@ public class Main {
                     }
                     pq.ChangePriority(v, alt);
                 } else if (buildPrev && alt == dist[v]) {
-                    // equally good shortest path
                     prev[v].add(u);
                 }
             }
@@ -116,7 +107,6 @@ public class Main {
                 adj[U].add(new Edge(V, P));
             }
 
-            // Data structures for Dijkstra and removal
             int[] dist = new int[N];
             @SuppressWarnings("unchecked")
             List<Integer>[] prev = new ArrayList[N];
@@ -144,7 +134,7 @@ public class Main {
                 int v = q.poll();
                 for (int u : prev[v]) {
                     if (!removed[u][v]) {
-                        removed[u][v] = true; // mark edge u -> v as removed
+                        removed[u][v] = true;
                         if (!visitedPrev[u]) {
                             visitedPrev[u] = true;
                             q.add(u);
@@ -187,21 +177,22 @@ class MinHeapPriorityQueue {
         }
     }
 
-    private HeapNode[] heap;                 // 1-based heap array
-    private int size;                        // current number of elements
-    private Map<Integer, Integer> position;  // item -> index in heap
+    private HeapNode[] heap;
+    private int size;
+    private Map<Integer, Integer> position;
 
     public MinHeapPriorityQueue(int capacity) {
         StartHeap(capacity);
     }
 
-    // Initialize / reset heap to hold up to N elements
+    // 3. StartHeap(N) – initialize / reset the heap to be empty with capacity N.
     public void StartHeap(int capacity) {
-        heap = new HeapNode[capacity + 1];  // use indices 1..capacity
+        heap = new HeapNode[capacity + 1];
         size = 0;
         position = new HashMap<>();
     }
 
+    // utils
     private int parent(int i) { return i / 2; }
     private int left(int i)   { return 2 * i; }
     private int right(int i)  { return 2 * i + 1; }
@@ -214,7 +205,6 @@ class MinHeapPriorityQueue {
         return size;
     }
 
-    // Swap two nodes and update positions
     private void swap(int i, int j) {
         HeapNode temp = heap[i];
         heap[i] = heap[j];
@@ -224,7 +214,7 @@ class MinHeapPriorityQueue {
         position.put(heap[j].item, j);
     }
 
-    // Move node up until heap property holds
+    // 1. Heapify_Up(index) - move node at index up until heap property holds.
     private void Heapify_Up(int index) {
         while (index > 1) {
             int p = parent(index);
@@ -237,7 +227,7 @@ class MinHeapPriorityQueue {
         }
     }
 
-    // Move node down until heap property holds
+    // 2. Heapify_Down(index) – move node at index down until heap property holds.
     private void Heapify_Down(int index) {
         while (true) {
             int leftChild = left(index);
@@ -259,7 +249,7 @@ class MinHeapPriorityQueue {
         }
     }
 
-    // Insert(item, value) in O(log n)
+    // 4. Insert(item, value) – insert a new (item, priority) into the heap.
     public void Insert(int item, int priority) {
         if (size >= heap.length - 1) {
             throw new IllegalStateException("Heap is full");
@@ -274,7 +264,8 @@ class MinHeapPriorityQueue {
         Heapify_Up(size);
     }
 
-    // FindMin() in O(1)
+
+    // 5. FindMin() – return the minimum element without removing it
     public HeapNode FindMin() {
         if (size == 0) {
             return null;
@@ -282,7 +273,7 @@ class MinHeapPriorityQueue {
         return heap[1];
     }
 
-    // Internal Delete(index) in O(log n)
+    // 6. Delete(index) – remove the node at position index in O(log n)
     private void DeleteIndex(int index) {
         if (index < 1 || index > size) {
             return;
@@ -299,13 +290,16 @@ class MinHeapPriorityQueue {
         HeapNode nodeToDelete = heap[index];
         HeapNode lastNode = heap[size];
 
+        // move last node to index
         heap[index] = lastNode;
         heap[size] = null;
         size--;
 
+        // update position map
         position.remove(nodeToDelete.item);
         position.put(lastNode.item, index);
 
+        // restore heap property
         int parentIndex = parent(index);
         if (index > 1 && heap[index].priority < heap[parentIndex].priority) {
             Heapify_Up(index);
@@ -314,7 +308,7 @@ class MinHeapPriorityQueue {
         }
     }
 
-    // ExtractMin() in O(log n)
+    // 7. ExtractMin() – remove and return the minimum element
     public HeapNode ExtractMin() {
         if (size == 0) {
             return null;
@@ -322,6 +316,33 @@ class MinHeapPriorityQueue {
         HeapNode min = heap[1];
         DeleteIndex(1);
         return min;
+    }
+
+    // 8. Delete(item) – delete the node with the given item key
+    public void Delete(int item) {
+        Integer index = position.get(item);
+        if (index == null) {
+            return; 
+        }
+        DeleteIndex(index);
+    }
+
+
+    // 9. ChangePriority(item, newPriority) – change the priority of item
+    public void ChangePriority(int item, int newPriority) {
+        Integer index = position.get(item);
+        if (index == null) {
+            return; 
+        }
+
+        int oldPriority = heap[index].priority;
+        heap[index].priority = newPriority;
+
+        if (newPriority < oldPriority) {
+            Heapify_Up(index);
+        } else if (newPriority > oldPriority) {
+            Heapify_Down(index);
+        }
     }
 
     /**
@@ -333,32 +354,5 @@ class MinHeapPriorityQueue {
         HeapNode min = ExtractMin();
         if (min == null) return -1;
         return min.item;
-    }
-
-    // Delete(item) in O(log n) via position map
-    public void Delete(int item) {
-        Integer index = position.get(item);
-        if (index == null) {
-            return;
-        }
-        DeleteIndex(index);
-    }
-
-    // ChangePriority(item, newPriority) in O(log n)
-    public void ChangePriority(int item, int newPriority) {
-        Integer index = position.get(item);
-        if (index == null) {
-            return;
-        }
-
-        int oldPriority = heap[index].priority;
-        heap[index].priority = newPriority;
-
-        if (newPriority < oldPriority) {
-            Heapify_Up(index);
-        } else if (newPriority > oldPriority) {
-            Heapify_Down(index);
-        }
-        // if equal, no reheapification needed
     }
 }
