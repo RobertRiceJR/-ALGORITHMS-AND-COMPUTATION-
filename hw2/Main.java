@@ -57,7 +57,7 @@ public class Main {
 
         while (true) {
             Integer nObj = fs.nextIntNullable();
-            if (nObj == null) break; // no more test cases
+            if (nObj == null) break; 
             int N = nObj;
             int T = fs.nextInt();
 
