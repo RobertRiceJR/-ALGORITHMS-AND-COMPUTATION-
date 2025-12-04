@@ -108,7 +108,7 @@ public class MinHeapPriorityQueue {
     }
 
 
-    // 5. FindMin() – return the minimum element without removing it.
+    // 5. FindMin() – return the minimum element without removing it
     public HeapNode FindMin() {
         if (size == 0) {
             return null;
@@ -116,7 +116,7 @@ public class MinHeapPriorityQueue {
         return heap[1];
     }
 
-    // 6. Delete(index) – remove the node at position index in O(log n).
+    // 6. Delete(index) – remove the node at position index in O(log n)
     private void DeleteIndex(int index) {
         if (index < 1 || index > size) {
             return;
@@ -138,7 +138,7 @@ public class MinHeapPriorityQueue {
         heap[size] = null;
         size--;
 
-        // update position map.
+        // update position map
         position.remove(nodeToDelete.item);
         position.put(lastNode.item, index);
 
@@ -151,7 +151,7 @@ public class MinHeapPriorityQueue {
         }
     }
 
-    // 7. ExtractMin() – remove and return the minimum element.
+    // 7. ExtractMin() – remove and return the minimum element
     public HeapNode ExtractMin() {
         if (size == 0) {
             return null;
@@ -161,11 +161,11 @@ public class MinHeapPriorityQueue {
         return min;
     }
 
-    // 8. Delete(item) – delete the node with the given item key.
+    // 8. Delete(item) – delete the node with the given item key
     public void Delete(int item) {
         Integer index = position.get(item);
         if (index == null) {
-            return; // or throw if you prefer
+            return; 
         }
         DeleteIndex(index);
     }
@@ -174,7 +174,7 @@ public class MinHeapPriorityQueue {
     public void ChangePriority(int item, int newPriority) {
         Integer index = position.get(item);
         if (index == null) {
-            return; // or throw if you prefer
+            return; 
         }
 
         int oldPriority = heap[index].priority;
